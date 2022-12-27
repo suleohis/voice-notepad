@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "743406536407",
+    "project_id": "speechtotextnotepad",
+    "storage_bucket": "speechtotextnotepad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743406536407:android:47e3d6c28ccac180e4d292",
+        "android_client_info": {
+          "package_name": "com.example.fluttervoice_notepad"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743406536407-merddi6gt1hb361v3rirpqh3tb77ho9g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fluttervoice_notepad",
+            "certificate_hash": "18fa661ef45a8a519611adc5480145da0e0298c4"
+          }
+        },
+        {
+          "client_id": "743406536407-k69acd79fk9ec6mr9p3uegiasoftldce.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCznRnkQTP8fykMj2ya82Vd6_GAHhdm2x4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "743406536407-k69acd79fk9ec6mr9p3uegiasoftldce.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743406536407:android:fb00b7eeebd5331ce4d292",
+        "android_client_info": {
+          "package_name": "com.suleohis.voice_notepad"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743406536407-k69acd79fk9ec6mr9p3uegiasoftldce.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCznRnkQTP8fykMj2ya82Vd6_GAHhdm2x4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "743406536407-k69acd79fk9ec6mr9p3uegiasoftldce.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

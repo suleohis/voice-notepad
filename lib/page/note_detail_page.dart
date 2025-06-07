@@ -132,11 +132,11 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                        primary: Colors.blueGrey.shade800),
+                        backgroundColor: Colors.blueGrey.shade800),
                     child: const Text('No')),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        primary: Colors.blueGrey.shade800),
+                        backgroundColor: Colors.blueGrey.shade800),
                     onPressed: () async {
                       bool check = ifLogin();
                       if (check) {
@@ -188,7 +188,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         },
         onSelected: (item) {
           if (item == 0) {
-            Share.share(note.title + '\n\n' + note.description);
+            SharePlus.instance.share(ShareParams(title: note.title, text: note.title + '\n\n' + note.description));
           }
           if (item == 1) {
             _write();
@@ -217,7 +217,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
     Directory directory = Directory('/storage/emulated/0/Documents');
     file = await File('${directory.path}/${note.title}.docx').copy(of.path);
-    print(file!.path);
   }
 
   save(String extension) async {
@@ -225,7 +224,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     Directory directory = Directory('/storage/emulated/0/Documents');
     file = File('${directory.path}/${note.title}$extension');
     await file!.writeAsString('${note.title}\n\n${note.description}');
-    print(file!.path);
   }
 
   ///This is used to create a txt file
@@ -233,9 +231,10 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     final Directory directory = await getApplicationDocumentsDirectory();
     file = File('${directory.path}/${note.title}.txt');
     await file!.writeAsString('${note.title}\n\n${note.description}');
-    await Share.shareFiles(
-      [file!.path],
-      text: note.title,
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(file!.path)],
+        text: note.title,)
     );
   }
 

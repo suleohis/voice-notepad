@@ -21,7 +21,7 @@ class AddEditNotePage extends StatefulWidget {
   _AddEditNotePageState createState() => _AddEditNotePageState();
 }
 
-class _AddEditNotePageState extends State<AddEditNotePage> {
+class _AddEditNotePageState extends State<AddEditNotePage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   late bool isImportant;
   late int number;
@@ -32,7 +32,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
   TextEditingController controller = TextEditingController();
 
   bool _hasSpeech = false;
-  bool _logEvents = false;
+  final bool _logEvents = false;
   double level = 0.0;
   double minSoundLevel = 50000;
   double maxSoundLevel = -50000;
@@ -41,10 +41,15 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
   String lastStatus = '';
   String? _currentLocaleId = '';
   String? _translationLocaleId = '';
-  List<LocaleName> o_localeNames = [];
   final SpeechToText speech = SpeechToText();
   FlutterSound flutterSound = FlutterSound();
-  final CustomTimerController _controller = CustomTimerController();
+  late final CustomTimerController _controller = CustomTimerController(
+      vsync: this,
+      begin: const Duration(hours: 24),
+      end: const Duration(),
+      initialState: CustomTimerState.reset,
+      interval: CustomTimerInterval.milliseconds
+  );
 
   refresh() async {
     maxWaitTime = await HelperFunction.getMaxWaitTimeSharedPreference();
@@ -52,9 +57,6 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     _currentLocaleId = await HelperFunction.getUserLangSharedPreference();
     _translationLocaleId =
         await HelperFunction.getUserTransLangSharedPreference();
-    print(maxWaitTime);
-    print(maxTime);
-    print(_currentLocaleId);
     setState(() {});
   }
 
@@ -157,15 +159,11 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
 
     speech.listen(
         onResult: resultListener,
-        pauseFor: Duration(seconds: 60),
-        listenFor: Duration(minutes: 1),
-        partialResults: true,
+        pauseFor: const Duration(seconds: 60),
+        listenFor: const Duration(minutes: 1),
         localeId: _currentLocaleId,
-        onSoundLevelChange: soundLevelListener,
-        cancelOnError: false,
-        listenMode: ListenMode.dictation);
+        onSoundLevelChange: soundLevelListener,);
 
-    print('here');
   }
 
   bool finished = false;
@@ -209,14 +207,10 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     }
     if (mounted) {
       setState(() {
-        print(result.recognizedWords);
         lastWords = result.recognizedWords;
-        // lastWords = '${result.recognizedWords} - ${result.finalResult}';
       });
     } else {
-        print(result.recognizedWords);
         lastWords = result.recognizedWords;
-        // lastWords = '${result.recognizedWords} - ${result.finalResult}';
     }
   }
 
@@ -244,16 +238,15 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
             error.errorMsg == "error_speech_timeout")  && finished == true) {
       // controller.text = controller.text + lastWords;
       speech.stop();
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
       initSpeechState();
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
       startListening();
     }
     _logEvent(
         'Received error status: $error, listening: ${speech.isListening}');
 
     lastError = '${error.errorMsg} - ${error.permanent}';
-    print('error \n\n' + lastError + '\n\nerror');
   }
 
   void statusListener(String status) async {
@@ -261,13 +254,11 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
     if ((status == 'notListening' || status == 'done') && finished == true) {
       // controller.text = controller.text + lastWords;
       speech.stop();
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
       initSpeechState();
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
       startListening();
     }
-    print(
-        'Received listener status: $status, listening: ${speech.isListening}');
     if (mounted) {
       setState(() {
         lastStatus = status;
@@ -283,8 +274,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> {
 
   void _logEvent(String eventDescription) {
     if (_logEvents) {
-      var eventTime = DateTime.now().toIso8601String();
-      print('$eventTime $eventDescription');
+      // var eventTime = DateTime.now().toIso8601String();
     }
   }
 

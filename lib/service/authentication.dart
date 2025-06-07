@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:voice_notepad/function/print_fun.dart';
 
 import '../db/sharedpref.dart';
 import 'database.dart';
@@ -26,19 +26,6 @@ class Authentication{
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
 
-    if(false){
-      GoogleAuthProvider authProvider = GoogleAuthProvider();
-
-      try{
-        final UserCredential userCredential =
-            await auth.signInWithPopup(authProvider);
-
-        user = userCredential.user;
-      }catch (e){
-        print(e);
-      }
-    }
-    else{
       GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: [
           'email',
@@ -48,7 +35,6 @@ class Authentication{
 
       final GoogleSignInAccount? googleSignInAccount =
       await googleSignIn.signIn();
-      print('failed');
       if(googleSignInAccount != null){
         final GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
@@ -60,8 +46,9 @@ class Authentication{
 
         try{
           final UserCredential userCredential =
-          await auth.signInWithCredential(credential).catchError((vk){
-            print('\n\n\m'+vk.message+'\n\n\n  '+ '  this is to suppose to fail');
+          await auth.signInWithCredential(credential).catchError((vk) async {
+            printError('\n\n\n'+vk.message+'\n\n\n  '+ '  this is to suppose to fail');
+            return vk;
           });
 
           user = userCredential.user;
@@ -71,14 +58,11 @@ class Authentication{
             'Log check': 'Sign In',
             'LogOut time':  DateTime.parse(DateTime.now().toIso8601String())
           };
-          print('        object    ');
-
 
           HelperFunction.saveUserLoggedInSharedPreference(true);
           HelperFunction.saveUserNameSharedPreference(user.displayName);
           HelperFunction.saveUserEmailSharedPreference(user.email);
           DatabaseMethods().uploadUserInfo(userMap,context);
-          print('it is working well kdkd');
         }on FirebaseAuthException catch (e){
           if(e.code == 'account-exists-with-different-credential'){
             ScaffoldMessenger.of(context).showSnackBar(
@@ -104,7 +88,7 @@ class Authentication{
           );
         }
       }
-    }
+
   }
 
   static SnackBar customSnackBar({required String content}){
@@ -112,7 +96,7 @@ class Authentication{
       backgroundColor: Colors.black,
         content: Text(
             content,
-          style: TextStyle(color: Colors.redAccent,letterSpacing: 0.5),
+          style: const TextStyle(color: Colors.redAccent,letterSpacing: 0.5),
         )
     );
   }

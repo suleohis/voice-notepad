@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:voice_notepad/function/print_fun.dart';
 
 import '../db/notes_database.dart';
 import '../model/note.dart';
@@ -81,10 +82,10 @@ class UploadNote with ChangeNotifier{
       // }
 
     }on SocketException catch(e){
-      print(e);
+      printError(e);
     }
     catch(e){
-      print(e);
+      printError(e);
     }
   }
 
@@ -109,10 +110,10 @@ class UploadNote with ChangeNotifier{
 
 
         });
-        print('connected');
+        printInfo('connected');
       }
     } on SocketException catch (_) {
-      print('not connected');
+      printError('not connected');
     }
   }
 
@@ -135,14 +136,6 @@ class UploadNote with ChangeNotifier{
   sortList(){
     listOfLocalNotes.sort((a,b)=> a.docId.compareTo(b.docId));
     listOfUpdatedNotes.sort((a,b)=>a.docId.compareTo(b.docId));
-    print('list from phone');
-    for (var element in listOfLocalNotes) {
-      print(element.docId);
-    }
-    print('List from firebase');
-    for (var element in listOfUpdatedNotes) {
-      print(element.docId);
-    }
   }
 
   ///This is used to check list if the first check failed
@@ -150,14 +143,12 @@ class UploadNote with ChangeNotifier{
     sortList();
     bool failed =false;
     int count  = 0;
-    print('chekList');
     if(string == 'local'){
       for(int i = 0; i<listOfUpdatedNotes.length;i++){
         if(!(listOfUpdatedNotes[i].docId == listOfLocalNotes[i].docId)){
           await DatabaseMethods().deleteANote(listOfUpdatedNotes[i].docId);
           listOfUpdatedNotes.remove(i);
           sortList();
-          print(listOfUpdatedNotes.length);
           i = i -1;
           count++;
           if(count > 5){
@@ -177,10 +168,8 @@ class UploadNote with ChangeNotifier{
           await DatabaseMethods().uploadNotes(listOfLocalNotes[i].toJson());
           listOfUpdatedNotes.add(listOfLocalNotes[i]);
           sortList();
-          print(listOfUpdatedNotes.length);
           i = i -1;
           counts++;
-          print('$count update check');
           if(counts > 5){
             sortList();
             failed = true;
@@ -190,7 +179,7 @@ class UploadNote with ChangeNotifier{
       }
     }
     if(failed){
-      print('second check have failed, Restarting');
+      printError('second check have failed, Restarting');
       failed = false;
       if(string == 'local'){
         return checkList('local');
@@ -210,7 +199,6 @@ class UploadNote with ChangeNotifier{
     getListOfUploadedNotes();
     sortList();
     if(notes.isEmpty){
-      print('get all');
       for (var element in listOfUpdatedNotes) {
         NotesDatabase.instance.create(element);
       }
@@ -222,8 +210,6 @@ class UploadNote with ChangeNotifier{
     }
 
     if(notes.isNotEmpty){
-     print('get notes start');
-       print('check and get notes');
      for (var element in listOfUpdatedNotes) {
        if(listOfDocId.contains(element.docId)){
          notes.sort((a,b)=> a.docId.compareTo(b.docId));

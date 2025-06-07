@@ -10,7 +10,6 @@ class DatabaseMethods{
     final User? user =  auth.currentUser;
     await FirebaseFirestore.instance.collection('users')
         .doc(user!.uid).set(userMap).then((value) {
-          print('done');
           Navigator.pop(context);
           Navigator.pop(context);
           Navigator.pushNamed(context, 'homes');
@@ -22,7 +21,6 @@ class DatabaseMethods{
     final User? user =  auth.currentUser;
     await FirebaseFirestore.instance.collection('users')
         .doc(user!.uid).update(userMap).then((value) {
-      print('done');
       auth.signOut();
 
       Navigator.pop(context);

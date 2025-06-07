@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:voice_notepad/page/profilePage.dart';
+import 'package:voice_notepad/page/profile_page.dart';
 
 import '../db/notes_database.dart';
 import '../db/sharedpref.dart';
-import '../function/uploadFuntion.dart';
+import '../function/upload_Function.dart';
 import '../model/note.dart';
 import '../widget/note_card_widget.dart';
 import 'edit_note_page.dart';
@@ -35,7 +35,6 @@ class _NotesPageState extends State<NotesPage>{
   @override
   void initState() {
     checkPermission();
-    er();
     checkFirstTime();
     super.initState();
     refreshNotes();
@@ -58,16 +57,8 @@ class _NotesPageState extends State<NotesPage>{
   ///And from firebase if just logging in
   Future refreshNotes()async{
 
-    if(false){
-      setState(() =>isLoading=true);
-        setState(() {});
-        if(test){
-          UploadNote(notes: notes,context: context).getNotes();
-        }
-      setState(() => isLoading =false);
-    }else{
       setState(() => isLoading =true);
-      this.notes =  await NotesDatabase.instance.readAllNotes().then((value){
+      notes =  await NotesDatabase.instance.readAllNotes().then((value){
         setState(() {});
         if(test){
           UploadNote(notes: value,context: context).checkInternetConnection
@@ -81,23 +72,13 @@ class _NotesPageState extends State<NotesPage>{
       listType = (await HelperFunction.getListTypeSharedPreference())!;
       setState(() => isLoading =false);
       getSearchAlgorithm();
-    }
+
   }
 
-  ///This is used to check if you sign in
-  er()async{
-    bool? test = await HelperFunction.getUserLoggedInSharedPreference();
-    if(test == null){
-      print('true');
-    }else{
-      print('false');
-    }
-  }
   List<Map<String,dynamic>> listOfSearchAlgorithm =[];
   ///This is used to check if this is the First time opening the app
   checkFirstTime()async{
     if(await HelperFunction.getUserLoggedInSharedPreference() == null){
-      print(await HelperFunction.getUserLoggedInSharedPreference());
       HelperFunction.saveUserLoggedInSharedPreference(false);
       test = (await HelperFunction.getUserLoggedInSharedPreference())!;
     }else{
@@ -110,7 +91,6 @@ class _NotesPageState extends State<NotesPage>{
       HelperFunction.saveListTypeSharedPreference(true);
     }
     if(await HelperFunction.getMaxTimeSharedPreference() ==null){
-      print(await HelperFunction.getMaxTimeSharedPreference());
       HelperFunction.saveMaxTimeSharedPreference(1);
     }
     if(await HelperFunction.getUserLangSharedPreference() ==null){
@@ -209,10 +189,10 @@ class _NotesPageState extends State<NotesPage>{
           const Text('No Notes', style:
           TextStyle(color: Colors.white, fontSize: 24),):buildNote(),
   Provider.of<UploadNote>(context, listen: true).syncing ?
-          Align(
+          const Align(
             alignment: Alignment.bottomCenter,
             child: Wrap(
-              children: const [
+              children: [
                 SizedBox(
                     height:20,
                     width: 20,
@@ -333,10 +313,9 @@ class _NotesPageState extends State<NotesPage>{
 
      },
    )
-   : StaggeredGridView.countBuilder(
+   : AlignedGridView.count(
       padding: const EdgeInsets.all(8),
       itemCount: notes.length,
-      staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
       crossAxisCount: 4,
       mainAxisSpacing: 4,
       crossAxisSpacing: 4,

@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:voice_notepad/page/introducton_screen.dart';
 import 'package:voice_notepad/page/notes_page.dart';
-import 'package:voice_notepad/page/profilePage.dart';
+import 'package:voice_notepad/page/profile_page.dart';
 import 'db/sharedpref.dart';
-import 'function/uploadFuntion.dart';
+import 'function/upload_Function.dart';
 
 Future main()async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +48,6 @@ class _MyAppState extends State<MyApp> {
       setState(() {});
     }
     if(await HelperFunction.getUserLoggedInSharedPreference() == null){
-      print(await HelperFunction.getUserLoggedInSharedPreference());
       HelperFunction.saveUserLoggedInSharedPreference(false);
       test = (await HelperFunction.getUserLoggedInSharedPreference())!;
     }else{
@@ -61,7 +60,6 @@ class _MyAppState extends State<MyApp> {
       HelperFunction.saveListTypeSharedPreference(true);
     }
     if(await HelperFunction.getMaxTimeSharedPreference() ==null){
-      print(await HelperFunction.getMaxTimeSharedPreference());
       HelperFunction.saveMaxTimeSharedPreference(1);
     }
     if(await HelperFunction.getUserLangSharedPreference() ==null){

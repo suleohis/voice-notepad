@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:voice_notepad/function/print_fun.dart';
 
 import '../db/sharedpref.dart';
 import '../service/authentication.dart';
@@ -9,12 +10,11 @@ class ProfilePage extends StatefulWidget {
   final bool signIn;
   const ProfilePage(this.signIn, {Key? key}) : super(key: key);
   @override
-  _ProfilePageState createState() => _ProfilePageState(signIn);
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final bool signIn;
-  _ProfilePageState(this.signIn);
+  late bool signIn;
   bool loading = false;
   int? maxWaitTime = 0;
   int? maxTime = 0;
@@ -31,6 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
+    signIn = widget.signIn;
     // tests();
     getTime();
     super.initState();
@@ -335,10 +336,10 @@ class _ProfilePageState extends State<ProfilePage> {
           Authentication.signOUt(context: context);
         }
 
-        print('connected');
+        printInfo('connected');
       }
     } on SocketException catch (_) {
-      print('not connected');
+      printError('not connected');
     }
   }
 

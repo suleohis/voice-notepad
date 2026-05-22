@@ -88,8 +88,10 @@ class _MyAppState extends State<MyApp> {
       scaffoldBackgroundColor: Colors.blueGrey.shade900,
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Colors.white),
         elevation: 0
-      )
+      ),
+
     ),
     // home: NotesPage(false),
     home:firstTime !=null ? firstTime! ? const NotesPage(false):const OnBoardPage(): Scaffold(

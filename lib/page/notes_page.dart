@@ -139,7 +139,7 @@ class _NotesPageState extends State<NotesPage>{
       )
           : const Text(
         'Notes',
-        style: TextStyle(fontSize: 24),
+        style: TextStyle(fontSize: 24, color: Colors.white),
       ),
       actions: [
         GestureDetector(

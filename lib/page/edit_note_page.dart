@@ -286,7 +286,7 @@ class _AddEditNotePageState extends State<AddEditNotePage> with SingleTickerProv
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
+          foregroundColor: Colors.black,
           backgroundColor: isFormValid ? null : Colors.grey.shade700,
         ),
         onPressed: addOrUpdateNote,

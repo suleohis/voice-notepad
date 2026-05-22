@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,73 +24,70 @@ class Authentication{
     return firebaseApp;
   }
 
-  static Future<void> signWithGoogle({required BuildContext context})async{
+  static Future<void> signWithGoogle({required BuildContext context}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
-    User? user;
+    GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
-      GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: [
-          'email',
-          'https://www.googleapis.com/auth/contacts.readonly',
-        ],
+    try {
+      await googleSignIn.initialize(
+        serverClientId: "743406536407-k69acd79fk9ec6mr9p3uegiasoftldce.apps.googleusercontent.com",
       );
 
-      final GoogleSignInAccount? googleSignInAccount =
-      await googleSignIn.signIn();
-      if(googleSignInAccount != null){
-        final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.authenticate();
 
-        final AuthCredential credential = GoogleAuthProvider.credential(
-            accessToken: googleSignInAuthentication.accessToken,
-            idToken: googleSignInAuthentication.idToken
-        );
+      if (googleSignInAccount == null) return;
 
-        try{
-          final UserCredential userCredential =
-          await auth.signInWithCredential(credential).catchError((vk) async {
-            printError('\n\n\n'+vk.message+'\n\n\n  '+ '  this is to suppose to fail');
-            return vk;
-          });
+      final GoogleSignInAuthentication googleSignInAuthentication =
+      await googleSignInAccount.authentication;
 
-          user = userCredential.user;
-          Map<String, dynamic> userMap ={
-            'name':user!.displayName,
-            'email':user.email,
-            'Log check': 'Sign In',
-            'LogOut time':  DateTime.parse(DateTime.now().toIso8601String())
-          };
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleSignInAuthentication.idToken,
+      );
 
-          HelperFunction.saveUserLoggedInSharedPreference(true);
-          HelperFunction.saveUserNameSharedPreference(user.displayName);
-          HelperFunction.saveUserEmailSharedPreference(user.email);
-          DatabaseMethods().uploadUserInfo(userMap,context);
-        }on FirebaseAuthException catch (e){
-          if(e.code == 'account-exists-with-different-credential'){
-            ScaffoldMessenger.of(context).showSnackBar(
-                Authentication.customSnackBar(
-                  content:
-                  'The account already exists with a different credential',
-                )
-            );
-          }
-          else if(e.code == 'invalid-credential'){
-            ScaffoldMessenger.of(context).showSnackBar(
-                Authentication.customSnackBar(
-                  content:
-                  'Error occurred while accessing credentials. Try again.',
-                )
-            );
-          }
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            Authentication.customSnackBar(
-              content: 'Error occurred using Google Sign In. Try again.',
-            ),
-          );
-        }
-      }
+      final UserCredential userCredential =
+      await auth.signInWithCredential(credential);
 
+      final User? user = userCredential.user;
+
+      if (user == null) return;
+
+      final Map<String, dynamic> userMap = {
+        'name': user.displayName,
+        'email': user.email,
+        'Log check': 'Sign In',
+        'LogOut time': DateTime.parse(DateTime.now().toIso8601String()),
+      };
+
+      await HelperFunction.saveUserLoggedInSharedPreference(true);
+      await HelperFunction.saveUserNameSharedPreference(user.displayName);
+      await HelperFunction.saveUserEmailSharedPreference(user.email);
+      DatabaseMethods().uploadUserInfo(userMap, context);
+
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        Authentication.customSnackBar(
+          content: 'Google Sign In failed. Try again.',
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      final String message = switch (e.code) {
+        'account-exists-with-different-credential' =>
+        'The account already exists with a different credential.',
+        'invalid-credential' =>
+        'Error occurred while accessing credentials. Try again.',
+        _ => 'Firebase error: ${e.message}',
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        Authentication.customSnackBar(content: message),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        Authentication.customSnackBar(
+          content: 'Error occurred using Google Sign In. Try again.',
+        ),
+      );
+    }
   }
 
   static SnackBar customSnackBar({required String content}){
@@ -102,7 +101,7 @@ class Authentication{
   }
 
   static Future<void> signOUt({required BuildContext context})async{
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignIn googleSignIn = GoogleSignIn.instance;
     final SharedPreferences pref = await SharedPreferences.getInstance();
     try{
       String? email = await HelperFunction.getUserEmailSharedPreference();
